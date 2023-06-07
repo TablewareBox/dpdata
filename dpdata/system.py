@@ -179,6 +179,7 @@ class System(MSONable):
             "real_atom_types", np.ndarray, (Axis.NFRAMES, Axis.NATOMS), required=False
         ),
         DataType("real_atom_names", list, (Axis.NTYPES,), required=False),
+        DataType("sepABindex", np.ndarray, (1,), required=False),
         DataType("nopbc", bool, required=False),
     )
 

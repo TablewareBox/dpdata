@@ -57,6 +57,8 @@ def to_system_data(folder, type_map=None, labels=True):
                 data["virials"] = np.reshape(data["virials"], [nframes, 3, 3])
         if os.path.isfile(os.path.join(folder, "nopbc")):
             data["nopbc"] = True
+        if os.path.isfile(os.path.join(folder, "sepABindex.raw")):
+            data["sepABindex"] = np.loadtxt(os.path.join(folder, "sepABindex.raw"))
         return data
     else:
         raise RuntimeError("not dir " + folder)
@@ -71,6 +73,9 @@ def dump(folder, data):
     np.savetxt(
         os.path.join(folder, "coord.raw"), np.reshape(data["coords"], [nframes, -1])
     )
+    # Dimer System
+    if "sepABindex" in data:
+        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"])
     # BondOrder System
     if "bonds" in data:
         np.savetxt(

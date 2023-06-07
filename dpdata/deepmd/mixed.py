@@ -40,7 +40,8 @@ def _load_set(folder, nopbc: bool):
     forces = _cond_load_data(os.path.join(folder, "force.npy"))
     virs = _cond_load_data(os.path.join(folder, "virial.npy"))
     real_atom_types = np.load(os.path.join(folder, "real_atom_types.npy"))
-    return cells, coords, eners, forces, virs, real_atom_types
+    sepABindex = np.load(os.path.join(folder, "sepABindex.npy")) if os.path.exists(os.path.join(folder, "sepABindex.npy")) else None
+    return cells, coords, eners, forces, virs, real_atom_types, sepABindex
 
 
 def to_system_data(folder, type_map=None, labels=True):
@@ -56,14 +57,17 @@ def to_system_data(folder, type_map=None, labels=True):
     all_forces = []
     all_virs = []
     all_real_atom_types = []
+    all_sepABindex = []
     for ii in sets:
-        cells, coords, eners, forces, virs, real_atom_types = _load_set(
+        cells, coords, eners, forces, virs, real_atom_types, sepABindex = _load_set(
             ii, data.get("nopbc", False)
         )
         nframes = np.reshape(cells, [-1, 3, 3]).shape[0]
         all_cells.append(np.reshape(cells, [nframes, 3, 3]))
         all_coords.append(np.reshape(coords, [nframes, -1, 3]))
         all_real_atom_types.append(np.reshape(real_atom_types, [nframes, -1]))
+        if sepABindex:
+            all_sepABindex.append(sepABindex)
         if eners is not None:
             eners = np.reshape(eners, [nframes])
         if labels:
@@ -76,6 +80,8 @@ def to_system_data(folder, type_map=None, labels=True):
     all_cells_concat = np.concatenate(all_cells, axis=0)
     all_coords_concat = np.concatenate(all_coords, axis=0)
     all_real_atom_types_concat = np.concatenate(all_real_atom_types, axis=0)
+    all_sepABindex_concat = np.concatenate(all_sepABindex, axis=0) if len(all_sepABindex) > 0 else None
+
     all_eners_concat = None
     all_forces_concat = None
     all_virs_concat = None
@@ -105,6 +111,10 @@ def to_system_data(folder, type_map=None, labels=True):
         temp_data["atom_numbs"] = temp_atom_numbs
         temp_data["atom_types"] = all_real_atom_types_concat[0]
         all_real_atom_types_concat = all_real_atom_types_concat[rest_idx]
+        if all_sepABindex_concat:
+            temp_data["sepABindex"] = all_sepABindex_concat[[temp_idx]]
+            all_sepABindex_concat = all_sepABindex_concat[rest_idx]
+
         temp_data["cells"] = all_cells_concat[temp_idx]
         all_cells_concat = all_cells_concat[rest_idx]
         temp_data["coords"] = all_coords_concat[temp_idx]
@@ -150,6 +160,10 @@ def dump(folder, data, set_size=2000, comp_prec=np.float32, remove_sets=True):
     # dump raw
     np.savetxt(os.path.join(folder, "type.raw"), data["atom_types"], fmt="%d")
     np.savetxt(os.path.join(folder, "type_map.raw"), data["real_atom_names"], fmt="%s")
+    # Dimer System
+    if "sepABindex" in data:
+        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"])
+    all_sepABindex = data["sepABindex"] if "sepABindex" in data else None
     # BondOrder System
     if "bonds" in data:
         np.savetxt(
@@ -203,6 +217,8 @@ def dump(folder, data, set_size=2000, comp_prec=np.float32, remove_sets=True):
             )
         if "atom_pref" in data:
             np.save(os.path.join(set_folder, "atom_pref"), atom_pref[set_stt:set_end])
+        if all_sepABindex:
+            np.save(os.path.join(set_folder, "sepABindex"), all_sepABindex[ii])
     try:
         os.remove(os.path.join(folder, "nopbc"))
     except OSError:

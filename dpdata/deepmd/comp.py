@@ -60,6 +60,9 @@ def to_system_data(folder, type_map=None, labels=True):
         data["forces"] = np.concatenate(all_forces, axis=0)
     if len(all_virs) > 0:
         data["virials"] = np.concatenate(all_virs, axis=0)
+
+    if os.path.isfile(os.path.join(folder, "sepABindex.raw")):
+        data["sepABindex"] = np.loadtxt(os.path.join(folder, "sepABindex.raw"))
     return data
 
 
@@ -81,6 +84,10 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
     # dump raw
     np.savetxt(os.path.join(folder, "type.raw"), data["atom_types"], fmt="%d")
     np.savetxt(os.path.join(folder, "type_map.raw"), data["atom_names"], fmt="%s")
+
+    # Dimer System
+    if "sepABindex" in data:
+        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"])
     # BondOrder System
     if "bonds" in data:
         np.savetxt(
