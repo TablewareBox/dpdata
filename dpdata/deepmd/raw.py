@@ -75,7 +75,7 @@ def dump(folder, data):
     )
     # Dimer System
     if "sepABindex" in data:
-        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"])
+        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"], fmt="%d")
     # BondOrder System
     if "bonds" in data:
         np.savetxt(

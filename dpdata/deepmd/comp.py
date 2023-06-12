@@ -87,7 +87,7 @@ def dump(folder, data, set_size=5000, comp_prec=np.float32, remove_sets=True):
 
     # Dimer System
     if "sepABindex" in data:
-        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"])
+        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"], fmt="%d")
     # BondOrder System
     if "bonds" in data:
         np.savetxt(
