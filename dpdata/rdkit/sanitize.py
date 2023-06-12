@@ -223,7 +223,7 @@ def sanitize_guanidine_Catom(C_atom, verbose=True):
             # set two C-N and one C=N+
             bond1 = mol.GetBondBetweenAtoms(C_atom.GetIdx(), terminal_NR2s[0].GetIdx())
             bond1.SetBondType(Chem.rdchem.BondType.SINGLE)
-            terminal_NR2s[0].SetFormalCharge(-1)
+            terminal_NR2s[0].SetFormalCharge(0)
 
             bond2 = mol.GetBondBetweenAtoms(C_atom.GetIdx(), terminal_NR2s[1].GetIdx())
             bond2.SetBondType(Chem.rdchem.BondType.SINGLE)
