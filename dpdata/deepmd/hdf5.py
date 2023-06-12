@@ -57,6 +57,9 @@ def to_system_data(
         data["nopbc"] = True
     sets = globfilter(g.keys(), "set.*")
 
+    if "sepABindex.raw" in g.keys():
+        data["sepABindex"] = g["sepABindex.raw"][:].astype(int)
+
     data_types = {
         "cells": {
             "fn": "box",
@@ -143,6 +146,9 @@ def dump(
     # dump raw (array in fact)
     g.create_dataset("type.raw", data=data["atom_types"])
     g.create_dataset("type_map.raw", data=np.array(data["atom_names"], dtype="S"))
+    # Dimer System
+    if "sepABindex" in data:
+        g.create_dataset("sepABindex.raw", data=data["sepABindex"])
     # BondOrder System
     if "bonds" in data:
         g.create_dataset("bonds.raw", data=data["bonds"])
