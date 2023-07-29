@@ -148,7 +148,7 @@ def dump(
     g.create_dataset("type_map.raw", data=np.array(data["atom_names"], dtype="S"))
     # Dimer System
     if "sepABindex" in data:
-        g.create_dataset("sepABindex.raw", data=data["sepABindex"])
+        g.create_dataset("sepABindex.raw", data=data["sepABindex"], dtype=np.int32)
     # BondOrder System
     if "bonds" in data:
         g.create_dataset("bonds.raw", data=data["bonds"])

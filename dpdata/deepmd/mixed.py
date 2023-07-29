@@ -162,7 +162,7 @@ def dump(folder, data, set_size=2000, comp_prec=np.float32, remove_sets=True):
     np.savetxt(os.path.join(folder, "type_map.raw"), data["real_atom_names"], fmt="%s")
     # Dimer System
     if "sepABindex" in data:
-        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"])
+        np.savetxt(os.path.join(folder, "sepABindex.raw"), data["sepABindex"], fmt="%d")
     all_sepABindex = data["sepABindex"] if "sepABindex" in data else None
     # BondOrder System
     if "bonds" in data:
